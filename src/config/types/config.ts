@@ -1,3 +1,5 @@
+import { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
+
 export enum RuntimeMode {
   DEVELOPMENT = 'development',
   PRODUCTION = 'production',
@@ -6,4 +8,5 @@ export enum RuntimeMode {
 export interface IConfig {
   mode: RuntimeMode;
   port: number;
+  database: MikroOrmModuleOptions;
 }
