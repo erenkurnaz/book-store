@@ -2,6 +2,7 @@ import { defineConfig, PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
 import { Migrator } from '@mikro-orm/migrations';
 import { EntityGenerator } from '@mikro-orm/entity-generator';
+import { SeedManager } from '@mikro-orm/seeder';
 
 export default defineConfig({
   driver: PostgreSqlDriver,
@@ -18,7 +19,7 @@ export default defineConfig({
   entitiesTs: ['src/**/*.entity.ts'],
   forceUtcTimezone: true,
   metadataProvider: TsMorphMetadataProvider,
-  extensions: [Migrator, EntityGenerator],
+  extensions: [Migrator, EntityGenerator, SeedManager],
   migrations: {
     path: './dist/migrations',
     pathTs: './src/migrations',
@@ -28,5 +29,12 @@ export default defineConfig({
     disableForeignKeys: false,
     safe: false,
     emit: 'ts',
+  },
+  seeder: {
+    path: 'seeders',
+    defaultSeeder: 'DatabaseSeeder',
+    glob: '!(*.d).{js,ts}',
+    emit: 'ts',
+    fileName: () => 'database.seeder',
   },
 });
