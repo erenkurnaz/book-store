@@ -1,13 +1,15 @@
 import {
+  Collection,
   Entity,
   EntityDTO,
   EntityRepositoryType,
+  ManyToMany,
   Property,
-  wrap,
 } from '@mikro-orm/core';
 
 import { BaseEntity } from '../base/base-entity';
 import { UserRepository } from './user.repository';
+import { Role } from '../role';
 
 @Entity({ repository: () => UserRepository })
 export class User extends BaseEntity {
@@ -22,9 +24,8 @@ export class User extends BaseEntity {
   @Property()
   fullName: string;
 
-  toJSON() {
-    return wrap<User>(this).toObject();
-  }
+  @ManyToMany()
+  roles = new Collection<Role>(this);
 }
 
 export type UserDTO = EntityDTO<User>;
