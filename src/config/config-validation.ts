@@ -10,4 +10,5 @@ export const configValidation = Joi.object({
   POSTGRES_HOST: Joi.string().default('localhost'),
   POSTGRES_USER: Joi.string().default('postgres'),
   POSTGRES_PASSWORD: Joi.string().default('postgres'),
+  JWT_SECRET: Joi.string().default('verysecuresecretkey'),
 });

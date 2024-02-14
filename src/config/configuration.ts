@@ -9,5 +9,6 @@ export const configuration = (): IConfig => {
     mode: RUNTIME_MODE,
     port: Number(process.env.PORT),
     database: databaseConfig,
+    jwtSecret: process.env.JWT_SECRET,
   };
 };

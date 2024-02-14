@@ -9,4 +9,5 @@ export interface IConfig {
   mode: RuntimeMode;
   port: number;
   database: MikroOrmModuleOptions;
+  jwtSecret: string;
 }
