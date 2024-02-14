@@ -4,11 +4,14 @@ import { SecurityModule } from '../security/security.module';
 import { AccessTokenGuard } from '../security/guards/access-token.guard';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseInterceptor, AllExceptionsFilter } from './interceptors';
+import { AuthenticationController } from './modules/authentication/authentication.controller';
+import { AuthenticationService } from './modules/authentication/authentication.service';
 
 @Module({
   imports: [DatabaseModule, SecurityModule],
-  controllers: [],
+  controllers: [AuthenticationController],
   providers: [
+    AuthenticationService,
     {
       provide: APP_GUARD,
       useClass: AccessTokenGuard,
