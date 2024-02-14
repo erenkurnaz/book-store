@@ -5,6 +5,8 @@ import { IConfig } from '../config';
 import { HashService } from './services/hash.service';
 import { TokenService } from './services/token.service';
 import { DatabaseModule } from '../database/database.module';
+import { AccessTokenStrategy } from './strategies/access-token.strategy';
+import { AccessTokenGuard } from './guards/access-token.guard';
 
 @Module({
   imports: [
@@ -19,7 +21,7 @@ import { DatabaseModule } from '../database/database.module';
       }),
     }),
   ],
-  providers: [HashService, TokenService],
+  providers: [HashService, TokenService, AccessTokenStrategy, AccessTokenGuard],
   exports: [HashService, TokenService],
 })
 export class SecurityModule {}
