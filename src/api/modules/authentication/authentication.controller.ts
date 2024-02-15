@@ -1,4 +1,4 @@
-import { Controller, Body, Post, Get } from '@nestjs/common';
+import { Controller, Body, Post, Get, HttpCode } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { SignUpDto } from './dto';
 import { CurrentUser, Public } from '../../decorators';
@@ -15,7 +15,8 @@ export class AuthenticationController {
   }
 
   @Public()
-  @Get('sign-in')
+  @Post('sign-in')
+  @HttpCode(200)
   async signIn(@Body() registerDto: SignUpDto) {
     return this.authService.login(registerDto);
   }
