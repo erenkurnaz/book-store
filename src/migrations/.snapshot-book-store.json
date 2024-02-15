@@ -72,7 +72,13 @@
       ],
       "checks": [],
       "foreignKeys": {},
-      "nativeEnums": {}
+      "nativeEnums": {
+        "user_role": [
+          "user",
+          "store_manager",
+          "admin"
+        ]
+      }
     },
     {
       "columns": {
@@ -116,7 +122,7 @@
           "mappedType": "string"
         }
       },
-      "name": "book_store",
+      "name": "store",
       "schema": "public",
       "indexes": [
         {
@@ -124,13 +130,13 @@
             "name"
           ],
           "composite": false,
-          "keyName": "book_store_name_unique",
+          "keyName": "store_name_unique",
           "constraint": true,
           "primary": false,
           "unique": true
         },
         {
-          "keyName": "book_store_pkey",
+          "keyName": "store_pkey",
           "columnNames": [
             "id"
           ],
@@ -142,7 +148,13 @@
       ],
       "checks": [],
       "foreignKeys": {},
-      "nativeEnums": {}
+      "nativeEnums": {
+        "user_role": [
+          "user",
+          "store_manager",
+          "admin"
+        ]
+      }
     },
     {
       "columns": {
@@ -204,11 +216,11 @@
           "mappedType": "integer"
         }
       },
-      "name": "book_inventory",
+      "name": "inventory",
       "schema": "public",
       "indexes": [
         {
-          "keyName": "book_inventory_pkey",
+          "keyName": "inventory_pkey",
           "columnNames": [
             "id"
           ],
@@ -220,102 +232,38 @@
       ],
       "checks": [],
       "foreignKeys": {
-        "book_inventory_book_id_foreign": {
-          "constraintName": "book_inventory_book_id_foreign",
+        "inventory_book_id_foreign": {
+          "constraintName": "inventory_book_id_foreign",
           "columnNames": [
             "book_id"
           ],
-          "localTableName": "public.book_inventory",
+          "localTableName": "public.inventory",
           "referencedColumnNames": [
             "id"
           ],
           "referencedTableName": "public.book",
           "updateRule": "cascade"
         },
-        "book_inventory_book_store_id_foreign": {
-          "constraintName": "book_inventory_book_store_id_foreign",
+        "inventory_book_store_id_foreign": {
+          "constraintName": "inventory_book_store_id_foreign",
           "columnNames": [
             "book_store_id"
           ],
-          "localTableName": "public.book_inventory",
+          "localTableName": "public.inventory",
           "referencedColumnNames": [
             "id"
           ],
-          "referencedTableName": "public.book_store",
+          "referencedTableName": "public.store",
           "updateRule": "cascade"
         }
       },
-      "nativeEnums": {}
-    },
-    {
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "uuid"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamptz",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "length": 6,
-          "default": "'now()'",
-          "mappedType": "datetime"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamptz",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "length": 6,
-          "mappedType": "datetime"
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "string"
-        }
-      },
-      "name": "role",
-      "schema": "public",
-      "indexes": [
-        {
-          "columnNames": [
-            "name"
-          ],
-          "composite": false,
-          "keyName": "role_name_unique",
-          "constraint": true,
-          "primary": false,
-          "unique": true
-        },
-        {
-          "keyName": "role_pkey",
-          "columnNames": [
-            "id"
-          ],
-          "composite": false,
-          "constraint": true,
-          "primary": true,
-          "unique": true
-        }
-      ],
-      "checks": [],
-      "foreignKeys": {},
-      "nativeEnums": {}
+      "nativeEnums": {
+        "user_role": [
+          "user",
+          "store_manager",
+          "admin"
+        ]
+      }
     },
     {
       "columns": {
@@ -375,6 +323,22 @@
           "primary": false,
           "nullable": false,
           "mappedType": "string"
+        },
+        "role": {
+          "name": "role",
+          "type": "user_role",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "nativeEnumName": "user_role",
+          "default": "'user'",
+          "enumItems": [
+            "user",
+            "store_manager",
+            "admin"
+          ],
+          "mappedType": "enum"
         }
       },
       "name": "user",
@@ -403,75 +367,20 @@
       ],
       "checks": [],
       "foreignKeys": {},
-      "nativeEnums": {}
-    },
-    {
-      "columns": {
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "uuid"
-        },
-        "role_id": {
-          "name": "role_id",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "uuid"
-        }
-      },
-      "name": "user_roles",
-      "schema": "public",
-      "indexes": [
-        {
-          "keyName": "user_roles_pkey",
-          "columnNames": [
-            "user_id",
-            "role_id"
-          ],
-          "composite": true,
-          "constraint": true,
-          "primary": true,
-          "unique": true
-        }
-      ],
-      "checks": [],
-      "foreignKeys": {
-        "user_roles_user_id_foreign": {
-          "constraintName": "user_roles_user_id_foreign",
-          "columnNames": [
-            "user_id"
-          ],
-          "localTableName": "public.user_roles",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.user",
-          "deleteRule": "cascade",
-          "updateRule": "cascade"
-        },
-        "user_roles_role_id_foreign": {
-          "constraintName": "user_roles_role_id_foreign",
-          "columnNames": [
-            "role_id"
-          ],
-          "localTableName": "public.user_roles",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.role",
-          "deleteRule": "cascade",
-          "updateRule": "cascade"
-        }
-      },
-      "nativeEnums": {}
+      "nativeEnums": {
+        "user_role": [
+          "user",
+          "store_manager",
+          "admin"
+        ]
+      }
     }
   ],
-  "nativeEnums": {}
+  "nativeEnums": {
+    "user_role": [
+      "user",
+      "store_manager",
+      "admin"
+    ]
+  }
 }

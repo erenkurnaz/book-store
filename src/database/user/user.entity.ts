@@ -1,15 +1,19 @@
 import {
-  Collection,
   Entity,
   EntityDTO,
   EntityRepositoryType,
-  ManyToMany,
+  Enum,
   Property,
 } from '@mikro-orm/core';
 
 import { BaseEntity } from '../base/base-entity';
 import { UserRepository } from './user.repository';
-import { Role } from '../role';
+
+export enum UserRole {
+  USER = 'user',
+  STORE_MANAGER = 'store_manager',
+  ADMIN = 'admin',
+}
 
 @Entity({ repository: () => UserRepository })
 export class User extends BaseEntity {
@@ -24,8 +28,12 @@ export class User extends BaseEntity {
   @Property()
   fullName: string;
 
-  @ManyToMany()
-  roles = new Collection<Role>(this);
+  @Enum({
+    items: () => UserRole,
+    default: UserRole.USER,
+    nativeEnumName: 'user_role',
+  })
+  role: UserRole;
 }
 
 export type UserDTO = EntityDTO<User>;

@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { FilterQuery, QueryOrder } from '@mikro-orm/core';
 
-import { BookStore, BookStoreRepository } from '../../../database/book-store';
+import { Store, StoreRepository } from '../../../database/store';
 import { PaginatedResult, PaginationOptions } from '../../decorators';
 
 @Injectable()
-export class BookStoreService {
-  constructor(private readonly bookStoreRepository: BookStoreRepository) {}
+export class StoreService {
+  constructor(private readonly bookStoreRepository: StoreRepository) {}
 
   public async getAll(
     keyword?: string,
-    pagination?: PaginationOptions<BookStore>,
-  ): Promise<PaginatedResult<BookStore>> {
-    let where: FilterQuery<BookStore> = {};
+    pagination?: PaginationOptions<Store>,
+  ): Promise<PaginatedResult<Store>> {
+    let where: FilterQuery<Store> = {};
     if (keyword) {
       where = { name: { $ilike: `%${keyword}%` } };
     }

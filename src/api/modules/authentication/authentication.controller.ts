@@ -2,7 +2,6 @@ import { Controller, Body, Post, Get } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { SignUpDto } from './dto';
 import { CurrentUser, Public } from '../../decorators';
-import { Loaded } from '@mikro-orm/core';
 import { UserDTO } from '../../../database/user';
 
 @Controller('auth')
@@ -22,7 +21,7 @@ export class AuthenticationController {
   }
 
   @Get('me')
-  async getCurrentUser(@CurrentUser() user: Loaded<UserDTO, 'roles'>) {
+  async getCurrentUser(@CurrentUser() user: UserDTO) {
     return user;
   }
 }

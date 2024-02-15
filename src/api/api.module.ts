@@ -6,15 +6,15 @@ import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseInterceptor, AllExceptionsFilter } from './interceptors';
 import { AuthenticationController } from './modules/authentication/authentication.controller';
 import { AuthenticationService } from './modules/authentication/authentication.service';
-import { BookStoreController } from './modules/book-store/book-store.controller';
-import { BookStoreService } from './modules/book-store/book-store.service';
+import { StoreController } from './modules/store/store.controller';
+import { StoreService } from './modules/store/store.service';
 
 @Module({
   imports: [DatabaseModule, SecurityModule],
-  controllers: [AuthenticationController, BookStoreController],
+  controllers: [AuthenticationController, StoreController],
   providers: [
     AuthenticationService,
-    BookStoreService,
+    StoreService,
     {
       provide: APP_GUARD,
       useClass: AccessTokenGuard,

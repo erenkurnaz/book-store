@@ -9,8 +9,8 @@ export type PaginatedResult<T> = {
 export type PaginationOptions<T = unknown> = {
   limit: number;
   offset: number;
-  order: QueryOrder;
-  orderBy: keyof T | undefined;
+  order?: QueryOrder;
+  orderBy?: keyof T | undefined;
 };
 
 export const Pagination = createParamDecorator(

@@ -4,20 +4,15 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { User, UserRepository } from './user';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Book, BookRepository } from './book';
-import { BookStore, BookStoreRepository } from './book-store';
-import { Role, RoleRepository } from './role';
+import { Store, StoreRepository } from './store';
+import { Inventory, InventoryRepository } from './inventory';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([User, Role, Book, BookStore])],
+  imports: [MikroOrmModule.forFeature([User, Book, Store, Inventory])],
   providers: [
     {
       provide: UserRepository,
       useFactory: (em: EntityManager) => em.getRepository(User),
-      inject: [EntityManager],
-    },
-    {
-      provide: RoleRepository,
-      useFactory: (em: EntityManager) => em.getRepository(Role),
       inject: [EntityManager],
     },
     {
@@ -26,16 +21,21 @@ import { Role, RoleRepository } from './role';
       inject: [EntityManager],
     },
     {
-      provide: BookStoreRepository,
-      useFactory: (em: EntityManager) => em.getRepository(BookStore),
+      provide: StoreRepository,
+      useFactory: (em: EntityManager) => em.getRepository(Store),
+      inject: [EntityManager],
+    },
+    {
+      provide: InventoryRepository,
+      useFactory: (em: EntityManager) => em.getRepository(Inventory),
       inject: [EntityManager],
     },
   ],
   exports: [
     UserRepository,
-    RoleRepository,
     BookRepository,
-    BookStoreRepository,
+    StoreRepository,
+    InventoryRepository,
   ],
 })
 export class DatabaseModule {}

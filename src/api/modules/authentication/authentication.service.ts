@@ -4,14 +4,12 @@ import { User, UserRepository } from '../../../database/user';
 import { HashService } from '../../../security/services/hash.service';
 import { SignInDto, SignUpDto } from './dto';
 import { TokenService } from '../../../security/services/token.service';
-import { RoleRepository } from '../../../database/role';
 import { AuthResult } from './dto/auth.result';
 
 @Injectable()
 export class AuthenticationService {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly roleRepository: RoleRepository,
     private readonly hashService: HashService,
     private readonly tokenService: TokenService,
   ) {}
@@ -20,17 +18,13 @@ export class AuthenticationService {
     const exists = await this.userRepository.checkExists({ email });
     if (exists) throw new HttpException('User already exists', 400);
 
-    const defaultRole = await this.roleRepository.getDefaultRole();
     const createdUser = this.userRepository.create(
       {
         email,
         fullName,
         password: await this.hashService.hash(password),
-        roles: [defaultRole],
       },
-      {
-        persist: true,
-      },
+      { persist: true },
     );
     await this.userRepository.getEntityManager().flush();
 
@@ -38,12 +32,9 @@ export class AuthenticationService {
   }
 
   async login({ email, password }: SignInDto) {
-    const user = await this.userRepository.findOne(
-      {
-        email,
-      },
-      { populate: ['roles'] },
-    );
+    const user = await this.userRepository.findOne({
+      email,
+    });
     if (!user) throw new HttpException('User not found', 404);
 
     const result = await this.hashService.verify(password, user.password);
