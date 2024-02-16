@@ -10,14 +10,22 @@ import { StoreController } from './modules/store/store.controller';
 import { StoreService } from './modules/store/store.service';
 import { UserService } from './modules/user/user.service';
 import { UserController } from './modules/user/user.controller';
+import { BookController } from './modules/book/book.controller';
+import { BookService } from './modules/book/book.service';
 
 @Module({
   imports: [DatabaseModule, SecurityModule],
-  controllers: [AuthenticationController, StoreController, UserController],
+  controllers: [
+    AuthenticationController,
+    StoreController,
+    UserController,
+    BookController,
+  ],
   providers: [
     AuthenticationService,
     StoreService,
     UserService,
+    BookService,
     {
       provide: APP_GUARD,
       useClass: AccessTokenGuard,
