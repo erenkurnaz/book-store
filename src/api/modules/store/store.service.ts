@@ -3,6 +3,7 @@ import { FilterQuery, QueryOrder } from '@mikro-orm/core';
 
 import { Store, StoreRepository } from '../../../database/store';
 import { PaginatedResult, PaginationOptions } from '../../decorators';
+import { StoreCreateDto } from './dto/store-create.dto';
 
 @Injectable()
 export class StoreService {
@@ -30,5 +31,12 @@ export class StoreService {
       results,
       total,
     };
+  }
+
+  public async create(storeCreateDto: StoreCreateDto) {
+    const createdStore = this.bookStoreRepository.create(storeCreateDto);
+    await this.bookStoreRepository.getEntityManager().flush();
+
+    return createdStore;
   }
 }
