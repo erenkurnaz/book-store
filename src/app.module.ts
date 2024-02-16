@@ -9,6 +9,7 @@ import { ApiModule } from './api/api.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
       validationSchema: configValidation,
       load: [configuration],
       isGlobal: true,

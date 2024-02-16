@@ -11,7 +11,7 @@ async function bootstrap() {
 
   await app.listen(config.get('port'));
 
-  console.log(`Server is listening on ${await app.getUrl()}`);
+  Logger.debug(`Server is listening on ${await app.getUrl()}`, 'Bootstrap');
 }
 
 bootstrap().catch((error) => {
