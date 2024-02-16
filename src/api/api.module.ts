@@ -8,13 +8,16 @@ import { AuthenticationController } from './modules/authentication/authenticatio
 import { AuthenticationService } from './modules/authentication/authentication.service';
 import { StoreController } from './modules/store/store.controller';
 import { StoreService } from './modules/store/store.service';
+import { UserService } from './modules/user/user.service';
+import { UserController } from './modules/user/user.controller';
 
 @Module({
   imports: [DatabaseModule, SecurityModule],
-  controllers: [AuthenticationController, StoreController],
+  controllers: [AuthenticationController, StoreController, UserController],
   providers: [
     AuthenticationService,
     StoreService,
+    UserService,
     {
       provide: APP_GUARD,
       useClass: AccessTokenGuard,
