@@ -10,7 +10,7 @@ export const configuration = (): IConfig => {
     port: Number(process.env.PORT),
     database: {
       allowGlobalContext: true,
-      ...databaseConfig,
+      ...databaseConfig(),
     },
     jwtSecret: process.env.JWT_SECRET,
   };
