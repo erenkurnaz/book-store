@@ -3,6 +3,7 @@ import { FilterQuery, QueryOrder } from '@mikro-orm/core';
 
 import { PaginatedResult, PaginationOptions } from '../../decorators';
 import { User, UserRepository } from '../../../database/user';
+import { UserCreateDto } from './dto/user-create.dto';
 
 @Injectable()
 export class UserService {
@@ -32,5 +33,11 @@ export class UserService {
       results,
       total,
     };
+  }
+
+  async create(userCreateDto: UserCreateDto) {
+    const createdUser = this.userRepository.create(userCreateDto);
+    await this.userRepository.getEntityManager().flush();
+    return createdUser;
   }
 }

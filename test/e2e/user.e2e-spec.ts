@@ -1,7 +1,7 @@
 import * as request from 'supertest';
 import { APP, clearDatabase } from '../helpers/app.helper';
 import { createToken, createUser } from '../helpers/user.helper';
-import { UserRole } from '../../src/database/user';
+import { User, UserRole } from '../../src/database/user';
 
 describe('User (e2e)', () => {
   let ADMIN_TOKEN: string;
@@ -45,6 +45,28 @@ describe('User (e2e)', () => {
         const { results, total } = response.body.data;
         expect(results.length).toEqual(LIMIT);
         expect(total).toEqual(users.length + 1);
+      });
+  });
+
+  it('should create a new user', async () => {
+    const userCreateDto: Partial<User> = {
+      email: 'test@test.com',
+      password: 'password',
+      fullName: 'Test User',
+      role: UserRole.STORE_MANAGER,
+    };
+
+    return request(APP.getHttpServer())
+      .post('/user')
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+      .send(userCreateDto)
+      .expect(201)
+      .expect((response) => {
+        const createdUser = response.body.data;
+
+        expect(createdUser.email).toEqual(userCreateDto.email);
+        expect(createdUser.fullName).toEqual(userCreateDto.fullName);
+        expect(createdUser.role).toEqual(userCreateDto.role);
       });
   });
 });
