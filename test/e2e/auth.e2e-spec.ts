@@ -1,5 +1,5 @@
 import * as request from 'supertest';
-import { APP } from '../helpers/app.helper';
+import { APP, clearDatabase } from '../helpers/app.helper';
 import { User, UserRole } from '../../src/database/user';
 import { createToken, createUser } from '../helpers/user.helper';
 import { faker } from '@faker-js/faker';
@@ -9,6 +9,7 @@ describe('Authentication (e2e)', () => {
   let USER: User;
 
   beforeEach(async () => {
+    await clearDatabase();
     USER = await createUser({ password: PASSWORD });
   });
 
@@ -22,6 +23,19 @@ describe('Authentication (e2e)', () => {
 
         expect(accessToken).toBeDefined();
         expect(user.email).toEqual(user.email);
+      });
+  });
+
+  it('should fail with "Invalid credentials" to sign in the user with wrong password', async () => {
+    return request(APP.getHttpServer())
+      .post('/auth/sign-in')
+      .send({ email: USER.email, password: 'wrong_password' })
+      .expect(401)
+      .expect((response) => {
+        expect(response.body.data).toBeNull();
+        expect(response.body.error.status).toEqual(401);
+        expect(response.body.error.name).toEqual('HttpException');
+        expect(response.body.error.message).toEqual('Invalid credentials');
       });
   });
 
