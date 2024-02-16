@@ -69,4 +69,24 @@ describe('User (e2e)', () => {
         expect(createdUser.role).toEqual(userCreateDto.role);
       });
   });
+
+  it('should update user role and other props must be same', async () => {
+    const user = await createUser({});
+    const updateUserData: Partial<User> = {
+      role: UserRole.STORE_MANAGER,
+    };
+
+    return request(APP.getHttpServer())
+      .patch(`/user/${user.id}`)
+      .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+      .send(updateUserData)
+      .expect(200)
+      .expect((response) => {
+        const updatedUser = response.body.data;
+
+        expect(updatedUser.email).toEqual(user.email);
+        expect(updatedUser.fullName).toEqual(user.fullName);
+        expect(updatedUser.role).toEqual(updateUserData.role);
+      });
+  });
 });
