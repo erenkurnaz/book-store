@@ -12,7 +12,7 @@ export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
   @Get()
-  @Roles(UserRole.USER, UserRole.STORE_MANAGER, UserRole.ADMIN)
+  @Roles([UserRole.USER])
   public async getAll(
     @Pagination() pagination: PaginationOptions<Store>,
     @Query('keyword') keyword?: string,

@@ -1,10 +1,19 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ROLES_KEY } from '../../api/decorators/roles.decorator';
+import {
+  ROLES_KEY,
+  USE_HIERARCHY_KEY,
+} from '../../api/decorators/roles.decorator';
 import { UserRole } from '../../database/user';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
+  private readonly roleHierarchy = [
+    UserRole.USER,
+    UserRole.STORE_MANAGER,
+    UserRole.ADMIN,
+  ] as const;
+
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
@@ -15,6 +24,16 @@ export class RolesGuard implements CanActivate {
     );
     if (!requiredRoles) return true;
 
-    return requiredRoles.includes(user.role);
+    const useHierarchy = this.reflector.getAllAndOverride<boolean>(
+      USE_HIERARCHY_KEY,
+      [context.getHandler()],
+    );
+    if (!useHierarchy) return requiredRoles.includes(user.role);
+
+    return requiredRoles.some(
+      (role) =>
+        this.roleHierarchy.indexOf(user.role) >=
+        this.roleHierarchy.indexOf(role),
+    );
   }
 }
