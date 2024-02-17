@@ -7,7 +7,7 @@ import { createStore } from '../helpers/store.helper';
 import { createInventory } from '../helpers/inventory.helper';
 import { Book } from '../../src/database/book';
 import { Store } from '../../src/database/store';
-import { AdjustInventoryDto } from '../../src/api/modules/book/dto/adjust-inventory.dto';
+import { AdjustInventoryDto } from '../../src/api/modules/store/dto/adjust-inventory.dto';
 import { UnprocessableEntityException } from '@nestjs/common';
 
 describe('Inventory Management (e2e)', () => {
@@ -15,7 +15,7 @@ describe('Inventory Management (e2e)', () => {
     await clearDatabase();
   });
 
-  describe('Adjust inventory from book', () => {
+  describe('Adjust inventory', () => {
     let BOOK: Book;
     let STORE: Store;
     let STORE_MANAGER_TOKEN: string;
@@ -35,9 +35,10 @@ describe('Inventory Management (e2e)', () => {
       const token = await createToken({ id: user.id, email: user.email });
       const requestBody = new AdjustInventoryDto();
       requestBody.storeId = STORE.id;
+      requestBody.bookId = BOOK.id;
       requestBody.quantityChange = 10;
       return request(APP.getHttpServer())
-        .put(`/book/${BOOK.id}/adjust-inventory`)
+        .put(`/store/adjust-inventory`)
         .send(requestBody)
         .set('Authorization', `Bearer ${token}`)
         .expect(403);
@@ -46,10 +47,11 @@ describe('Inventory Management (e2e)', () => {
     it('should throw exception if inventory not exists and quantity is negative', async () => {
       const requestBody = new AdjustInventoryDto();
       requestBody.storeId = STORE.id;
+      requestBody.bookId = BOOK.id;
       requestBody.quantityChange = -10;
 
       return request(APP.getHttpServer())
-        .put(`/book/${BOOK.id}/adjust-inventory`)
+        .put(`/store/adjust-inventory`)
         .send(requestBody)
         .set('Authorization', `Bearer ${STORE_MANAGER_TOKEN}`)
         .expect(422)
@@ -73,10 +75,11 @@ describe('Inventory Management (e2e)', () => {
       });
       const requestBody = new AdjustInventoryDto();
       requestBody.storeId = STORE.id;
+      requestBody.bookId = BOOK.id;
       requestBody.quantityChange = -11;
 
       return request(APP.getHttpServer())
-        .put(`/book/${BOOK.id}/adjust-inventory`)
+        .put(`/store/adjust-inventory`)
         .send(requestBody)
         .set('Authorization', `Bearer ${STORE_MANAGER_TOKEN}`)
         .expect(422)
@@ -95,21 +98,20 @@ describe('Inventory Management (e2e)', () => {
     it('should create inventory record with given quantity if inventory not exists', async () => {
       const requestBody = new AdjustInventoryDto();
       requestBody.storeId = STORE.id;
+      requestBody.bookId = BOOK.id;
       requestBody.quantityChange = 1;
       return request(APP.getHttpServer())
-        .put(`/book/${BOOK.id}/adjust-inventory`)
+        .put(`/store/adjust-inventory`)
         .send(requestBody)
         .set('Authorization', `Bearer ${STORE_MANAGER_TOKEN}`)
         .expect(200)
         .expect((response) => {
-          const book = response.body.data;
+          const inventory = response.body.data;
 
-          expect(book).toBeDefined();
-          expect(book.inventory).toBeDefined();
-          expect(book.inventory.length).toEqual(1);
-          expect(book.inventory[0].quantity).toEqual(
-            requestBody.quantityChange,
-          );
+          expect(inventory).toBeDefined();
+          expect(inventory.store).toEqual(STORE.id);
+          expect(inventory.book).toEqual(BOOK.id);
+          expect(inventory.quantity).toEqual(requestBody.quantityChange);
         });
     });
 
@@ -121,21 +123,22 @@ describe('Inventory Management (e2e)', () => {
       });
       const requestBody = new AdjustInventoryDto();
       requestBody.storeId = STORE.id;
+      requestBody.bookId = BOOK.id;
       requestBody.quantityChange = -5;
 
       const expectedQuantity = inventory.quantity + requestBody.quantityChange;
       return request(APP.getHttpServer())
-        .put(`/book/${BOOK.id}/adjust-inventory`)
+        .put(`/store/adjust-inventory`)
         .send(requestBody)
         .set('Authorization', `Bearer ${STORE_MANAGER_TOKEN}`)
         .expect(200)
         .expect((response) => {
-          const book = response.body.data;
+          const inventory = response.body.data;
 
-          expect(book).toBeDefined();
-          expect(book.inventory).toBeDefined();
-          expect(book.inventory.length).toEqual(1);
-          expect(book.inventory[0].quantity).toEqual(expectedQuantity);
+          expect(inventory).toBeDefined();
+          expect(inventory.store).toEqual(STORE.id);
+          expect(inventory.book).toEqual(BOOK.id);
+          expect(inventory.quantity).toEqual(expectedQuantity);
         });
     });
   });

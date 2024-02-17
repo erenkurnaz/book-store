@@ -4,10 +4,15 @@ import { FilterQuery, QueryOrder } from '@mikro-orm/core';
 import { Store, StoreRepository } from '../../../database/store';
 import { PaginatedResult, PaginationOptions } from '../../decorators';
 import { StoreCreateDto } from './dto/store-create.dto';
+import { AdjustInventoryDto } from './dto/adjust-inventory.dto';
+import { InventoryRepository } from '../../../database/inventory';
 
 @Injectable()
 export class StoreService {
-  constructor(private readonly bookStoreRepository: StoreRepository) {}
+  constructor(
+    private readonly storeRepository: StoreRepository,
+    private readonly inventoryRepository: InventoryRepository,
+  ) {}
 
   public async getAll(
     keyword?: string,
@@ -18,14 +23,11 @@ export class StoreService {
       where = { name: { $ilike: `%${keyword}%` } };
     }
 
-    const [results, total] = await this.bookStoreRepository.findAndCount(
-      where,
-      {
-        limit: pagination?.limit,
-        offset: pagination?.offset,
-        orderBy: { createdAt: QueryOrder.DESC },
-      },
-    );
+    const [results, total] = await this.storeRepository.findAndCount(where, {
+      limit: pagination?.limit,
+      offset: pagination?.offset,
+      orderBy: { createdAt: QueryOrder.DESC },
+    });
 
     return {
       results,
@@ -34,9 +36,21 @@ export class StoreService {
   }
 
   public async create(storeCreateDto: StoreCreateDto) {
-    const createdStore = this.bookStoreRepository.create(storeCreateDto);
-    await this.bookStoreRepository.getEntityManager().flush();
+    const createdStore = this.storeRepository.create(storeCreateDto);
+    await this.storeRepository.getEntityManager().flush();
 
     return createdStore;
+  }
+
+  public async adjustInventoryQuantity({
+    storeId,
+    bookId,
+    quantityChange,
+  }: AdjustInventoryDto) {
+    return this.inventoryRepository.upsertQuantity(
+      bookId,
+      storeId,
+      quantityChange,
+    );
   }
 }
