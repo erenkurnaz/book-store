@@ -359,6 +359,79 @@
           "admin"
         ]
       }
+    },
+    {
+      "columns": {
+        "store_id": {
+          "name": "store_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        }
+      },
+      "name": "store_managers",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "store_managers_pkey",
+          "columnNames": [
+            "store_id",
+            "user_id"
+          ],
+          "composite": true,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "store_managers_store_id_foreign": {
+          "constraintName": "store_managers_store_id_foreign",
+          "columnNames": [
+            "store_id"
+          ],
+          "localTableName": "public.store_managers",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.store",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "store_managers_user_id_foreign": {
+          "constraintName": "store_managers_user_id_foreign",
+          "columnNames": [
+            "user_id"
+          ],
+          "localTableName": "public.store_managers",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.user",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {
+        "user_role": [
+          "user",
+          "store_manager",
+          "admin"
+        ]
+      }
     }
   ],
   "nativeEnums": {
