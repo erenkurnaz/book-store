@@ -11,7 +11,7 @@ import { Book } from '../book';
 import { Store } from '../store';
 import { InventoryRepository } from './inventory.repository';
 
-@Entity()
+@Entity({ repository: () => InventoryRepository })
 @Unique({ properties: ['book', 'store'] })
 export class Inventory {
   [EntityRepositoryType]?: InventoryRepository;
