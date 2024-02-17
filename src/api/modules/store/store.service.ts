@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { FilterQuery, QueryOrder } from '@mikro-orm/core';
 
 import { Store, StoreRepository } from '../../../database/store';
@@ -6,6 +6,7 @@ import { PaginatedResult, PaginationOptions } from '../../decorators';
 import { StoreCreateDto } from './dto/store-create.dto';
 import { AdjustInventoryDto } from './dto/adjust-inventory.dto';
 import { InventoryRepository } from '../../../database/inventory';
+import { UserDTO } from '../../../database/user';
 
 @Injectable()
 export class StoreService {
@@ -52,5 +53,18 @@ export class StoreService {
       storeId,
       quantityChange,
     );
+  }
+
+  public validatePermission(user: UserDTO, storeId: string) {
+    if (user.role === 'admin') return true;
+
+    const hasPermissionForStore = user.stores.some(
+      (store) => store.id === storeId,
+    );
+    if (!hasPermissionForStore) {
+      throw new ForbiddenException(
+        'You do not have permission to manage this store',
+      );
+    }
   }
 }

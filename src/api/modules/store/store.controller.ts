@@ -8,11 +8,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { StoreService } from './store.service';
-import { Pagination, PaginationOptions } from '../../decorators';
+import { CurrentUser, Pagination, PaginationOptions } from '../../decorators';
 import { Store } from '../../../database/store';
 import { RolesGuard } from '../../../security/guards/roles.guard';
 import { Roles } from '../../decorators/roles.decorator';
-import { UserRole } from '../../../database/user';
+import { UserDTO, UserRole } from '../../../database/user';
 import { StoreCreateDto } from './dto/store-create.dto';
 import { AdjustInventoryDto } from './dto/adjust-inventory.dto';
 
@@ -37,7 +37,12 @@ export class StoreController {
 
   @Put('adjust-inventory')
   @Roles([UserRole.STORE_MANAGER], true)
-  public async adjustInventory(@Body() adjustInventoryDto: AdjustInventoryDto) {
+  public async adjustInventory(
+    @CurrentUser() user: UserDTO,
+    @Body() adjustInventoryDto: AdjustInventoryDto,
+  ) {
+    this.storeService.validatePermission(user, adjustInventoryDto.storeId);
+
     return this.storeService.adjustInventoryQuantity(adjustInventoryDto);
   }
 }
