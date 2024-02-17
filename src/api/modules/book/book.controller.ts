@@ -13,7 +13,7 @@ import { RolesGuard } from '../../../security/guards/roles.guard';
 import { Roles } from '../../decorators/roles.decorator';
 import { UserRole } from '../../../database/user';
 import { BookCreateDto } from './dto/book-create.dto';
-import { BookAddToInventoryDto } from './dto/book-add-to-inventory.dto';
+import { AdjustInventoryDto } from './dto/adjust-inventory.dto';
 import { Pagination, PaginationOptions, Public } from '../../decorators';
 import { Book } from '../../../database/book';
 
@@ -36,12 +36,12 @@ export class BookController {
     return await this.bookService.create(bookCreateDto);
   }
 
-  @Put(':id/add-to-inventory')
+  @Put(':id/adjust-inventory')
   @Roles([UserRole.STORE_MANAGER], true)
-  public async addToInventory(
+  public async adjustStock(
     @Param('id') id: string,
-    @Body() bookAddToInventoryDto: BookAddToInventoryDto,
+    @Body() adjustInventoryDto: AdjustInventoryDto,
   ) {
-    return await this.bookService.addToInventory(id, bookAddToInventoryDto);
+    return this.bookService.adjustInventoryQuantity(id, adjustInventoryDto);
   }
 }

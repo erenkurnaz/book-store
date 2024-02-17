@@ -1,8 +1,9 @@
 import { IsNotEmpty, IsNumber } from 'class-validator';
 
-export class BookAddToInventoryDto {
+export class AdjustInventoryDto {
   @IsNumber()
-  quantity: number;
+  @IsNotEmpty()
+  quantityChange: number;
 
   @IsNotEmpty()
   storeId: string;
