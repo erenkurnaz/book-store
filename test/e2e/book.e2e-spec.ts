@@ -7,6 +7,7 @@ import { createStore } from '../helpers/store.helper';
 import { createInventory } from '../helpers/inventory.helper';
 import { Book } from '../../src/database/book';
 import { Store } from '../../src/database/store';
+import { BookCreateDto } from '../../src/api/modules/book/dto/book-create.dto';
 
 describe('Book (e2e)', () => {
   let TOKEN: string;
@@ -21,9 +22,11 @@ describe('Book (e2e)', () => {
     it('should return 403 if user is not an admin', async () => {
       const user = await createUser({ role: UserRole.USER });
       const token = await createToken({ id: user.id, email: user.email });
+      const requestBody = new BookCreateDto();
+      requestBody.name = 'Book Name';
       return request(APP.getHttpServer())
         .post('/book')
-        .send({ name: 'Book Name' })
+        .send(requestBody)
         .set('Authorization', `Bearer ${token}`)
         .expect(403);
     });
@@ -31,17 +34,18 @@ describe('Book (e2e)', () => {
     it('should create book by admin', async () => {
       const user = await createUser({ role: UserRole.ADMIN });
       const adminToken = await createToken({ id: user.id, email: user.email });
-      const bookData = { name: 'Book Name' };
+      const requestBody = new BookCreateDto();
+      requestBody.name = 'Book Name';
       return request(APP.getHttpServer())
         .post('/book')
-        .send({ name: 'Book Name' })
+        .send(requestBody)
         .set('Authorization', `Bearer ${adminToken}`)
         .expect(201)
         .expect((response) => {
           const book = response.body.data;
 
           expect(book).toBeDefined();
-          expect(book.name).toEqual(bookData.name);
+          expect(book.name).toEqual(requestBody.name);
         });
     });
   });

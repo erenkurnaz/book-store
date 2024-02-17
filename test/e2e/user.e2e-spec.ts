@@ -1,9 +1,12 @@
 import * as request from 'supertest';
 import { APP, clearDatabase } from '../helpers/app.helper';
 import { createToken, createUser } from '../helpers/user.helper';
-import { User, UserRole } from '../../src/database/user';
+import { UserRole } from '../../src/database/user';
+import { UserCreateDto } from '../../src/api/modules/user/dto/user-create.dto';
+import { faker } from '@faker-js/faker';
+import { UserUpdateDto } from '../../src/api/modules/user/dto/user-update.dto';
 
-describe('User (e2e)', () => {
+describe('User Management (e2e)', () => {
   let ADMIN_TOKEN: string;
 
   beforeEach(async () => {
@@ -49,44 +52,43 @@ describe('User (e2e)', () => {
   });
 
   it('should create a new user', async () => {
-    const userCreateDto: Partial<User> = {
-      email: 'test@test.com',
-      password: 'password',
-      fullName: 'Test User',
-      role: UserRole.STORE_MANAGER,
-    };
+    const requestBody = new UserCreateDto();
+    requestBody.email = faker.internet.email();
+    requestBody.fullName = faker.person.fullName();
+    requestBody.password = faker.internet.password();
+    requestBody.role = UserRole.USER;
 
     return request(APP.getHttpServer())
       .post('/user')
       .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
-      .send(userCreateDto)
+      .send(requestBody)
       .expect(201)
       .expect((response) => {
         const createdUser = response.body.data;
 
-        expect(createdUser.email).toEqual(userCreateDto.email);
-        expect(createdUser.fullName).toEqual(userCreateDto.fullName);
-        expect(createdUser.role).toEqual(userCreateDto.role);
+        expect(createdUser.id).toBeDefined();
+        expect(createdUser.email).toEqual(requestBody.email);
+        expect(createdUser.fullName).toEqual(requestBody.fullName);
+        expect(createdUser.role).toEqual(requestBody.role);
       });
   });
 
   it('should update user role and other props must be same', async () => {
     const user = await createUser({});
-    const updateUserData: Partial<User> = {
-      role: UserRole.STORE_MANAGER,
-    };
+    const requestBody = new UserUpdateDto();
+    requestBody.role = UserRole.STORE_MANAGER;
 
     return request(APP.getHttpServer())
       .patch(`/user/${user.id}`)
       .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
-      .send(updateUserData)
+      .send(requestBody)
       .expect(200)
       .expect((response) => {
         const updatedUser = response.body.data;
 
         expect(updatedUser.email).toEqual(user.email);
         expect(updatedUser.fullName).toEqual(user.fullName);
-        expect(updatedUser.role).toEqual(updateUserData.role);
+        expect(updatedUser.role).toEqual(requestBody.role);
       });
   });
 });

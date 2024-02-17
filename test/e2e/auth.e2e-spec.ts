@@ -3,6 +3,7 @@ import { APP, clearDatabase } from '../helpers/app.helper';
 import { User, UserRole } from '../../src/database/user';
 import { createToken, createUser } from '../helpers/user.helper';
 import { faker } from '@faker-js/faker';
+import { SignInDto, SignUpDto } from '../../src/api/modules/authentication/dto';
 
 describe('Authentication (e2e)', () => {
   const PASSWORD = '123456';
@@ -14,9 +15,12 @@ describe('Authentication (e2e)', () => {
   });
 
   it('should sign in the user and return an access token', async () => {
+    const requestBody = new SignInDto();
+    requestBody.email = USER.email;
+    requestBody.password = PASSWORD;
     return request(APP.getHttpServer())
       .post('/auth/sign-in')
-      .send({ email: USER.email, password: PASSWORD })
+      .send(requestBody)
       .expect(200)
       .expect((response) => {
         const { user, accessToken } = response.body.data;
@@ -27,9 +31,12 @@ describe('Authentication (e2e)', () => {
   });
 
   it('should fail with "Invalid credentials" to sign in the user with wrong password', async () => {
+    const requestBody = new SignInDto();
+    requestBody.email = USER.email;
+    requestBody.password = 'wrong_password';
     return request(APP.getHttpServer())
       .post('/auth/sign-in')
-      .send({ email: USER.email, password: 'wrong_password' })
+      .send(requestBody)
       .expect(401)
       .expect((response) => {
         expect(response.body.data).toBeNull();
@@ -40,15 +47,14 @@ describe('Authentication (e2e)', () => {
   });
 
   it('should sign up a new user', async () => {
-    const newUser = {
-      email: faker.internet.email(),
-      password: faker.internet.password(),
-      fullName: faker.person.fullName(),
-    };
+    const requestBody = new SignUpDto();
+    requestBody.email = faker.internet.email();
+    requestBody.password = faker.internet.password();
+    requestBody.fullName = faker.person.fullName();
 
     return request(APP.getHttpServer())
       .post('/auth/sign-up')
-      .send(newUser)
+      .send(requestBody)
       .expect(201)
       .expect((response) => {
         const { user, accessToken } = response.body.data;

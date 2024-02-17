@@ -3,7 +3,7 @@ import { APP, clearDatabase } from '../helpers/app.helper';
 import { createStore } from '../helpers/store.helper';
 import { createToken, createUser } from '../helpers/user.helper';
 import { UserRole } from '../../src/database/user';
-import { Store } from '../../src/database/store';
+import { StoreCreateDto } from '../../src/api/modules/store/dto/store-create.dto';
 
 describe('Store (e2e)', () => {
   let USER_TOKEN: string;
@@ -16,9 +16,11 @@ describe('Store (e2e)', () => {
 
   describe('Create Store:', () => {
     it('should return 403 if user is not an admin', async () => {
+      const requestBody = new StoreCreateDto();
+      requestBody.name = 'Store Name';
       return request(APP.getHttpServer())
         .post('/store')
-        .send({ name: 'Store Name' })
+        .send(requestBody)
         .set('Authorization', `Bearer ${USER_TOKEN}`)
         .expect(403);
     });
@@ -29,64 +31,48 @@ describe('Store (e2e)', () => {
         id: admin.id,
         email: admin.email,
       });
-      const storeData = { name: 'Store Name' };
+      const requestBody = new StoreCreateDto();
+      requestBody.name = 'Store Name';
       return request(APP.getHttpServer())
         .post('/store')
-        .send(storeData)
+        .send(requestBody)
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .expect(201)
         .expect((response) => {
           const store = response.body.data;
 
           expect(store).toBeDefined();
-          expect(store.name).toEqual(storeData.name);
+          expect(store.name).toEqual(requestBody.name);
         });
     });
   });
 
-  it('should return all stores', async () => {
-    const stores = await Promise.all([createStore({}), createStore({})]);
-    return request(APP.getHttpServer())
-      .get('/store')
-      .set('Authorization', `Bearer ${USER_TOKEN}`)
-      .expect(200)
-      .expect((response) => {
-        const { results, total } = response.body.data;
-        expect(results.length).toEqual(stores.length);
-        expect(total).toEqual(stores.length);
-      });
-  });
+  describe('List Stores:', () => {
+    it('should return all stores', async () => {
+      const stores = await Promise.all([createStore({}), createStore({})]);
+      return request(APP.getHttpServer())
+        .get('/store')
+        .set('Authorization', `Bearer ${USER_TOKEN}`)
+        .expect(200)
+        .expect((response) => {
+          const { results, total } = response.body.data;
+          expect(results.length).toEqual(stores.length);
+          expect(total).toEqual(stores.length);
+        });
+    });
 
-  it('should apply pagination params', async () => {
-    const [LIMIT, OFFSET] = [1, 0];
-    const stores = await Promise.all([createStore({}), createStore({})]);
-    return request(APP.getHttpServer())
-      .get(`/store?limit=${LIMIT}&offset=${OFFSET}`)
-      .set('Authorization', `Bearer ${USER_TOKEN}`)
-      .expect(200)
-      .expect((response) => {
-        const { results, total } = response.body.data;
-        expect(results.length).toEqual(LIMIT);
-        expect(total).toEqual(stores.length);
-      });
-  });
-
-  it('should create a new store by admin', async () => {
-    const storeCreateDto: Partial<Store> = {
-      name: 'Test Store',
-    };
-    const admin = await createUser({ role: UserRole.ADMIN });
-    const ADMIN_TOKEN = await createToken({ id: admin.id, email: admin.email });
-
-    return request(APP.getHttpServer())
-      .post('/store')
-      .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
-      .send(storeCreateDto)
-      .expect(201)
-      .expect((response) => {
-        const createdStore = response.body.data;
-
-        expect(createdStore.name).toEqual(createdStore.name);
-      });
+    it('should apply pagination params', async () => {
+      const [LIMIT, OFFSET] = [1, 0];
+      const stores = await Promise.all([createStore({}), createStore({})]);
+      return request(APP.getHttpServer())
+        .get(`/store?limit=${LIMIT}&offset=${OFFSET}`)
+        .set('Authorization', `Bearer ${USER_TOKEN}`)
+        .expect(200)
+        .expect((response) => {
+          const { results, total } = response.body.data;
+          expect(results.length).toEqual(LIMIT);
+          expect(total).toEqual(stores.length);
+        });
+    });
   });
 });

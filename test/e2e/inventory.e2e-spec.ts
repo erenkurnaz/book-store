@@ -33,9 +33,12 @@ describe('Inventory Management (e2e)', () => {
     it('should return 403 if user is not a store manager or admin', async () => {
       const user = await createUser({ role: UserRole.USER });
       const token = await createToken({ id: user.id, email: user.email });
+      const requestBody = new AdjustInventoryDto();
+      requestBody.storeId = STORE.id;
+      requestBody.quantityChange = 10;
       return request(APP.getHttpServer())
         .put(`/book/${BOOK.id}/adjust-inventory`)
-        .send({ storeId: 'store.id', quantity: 10 })
+        .send(requestBody)
         .set('Authorization', `Bearer ${token}`)
         .expect(403);
     });
