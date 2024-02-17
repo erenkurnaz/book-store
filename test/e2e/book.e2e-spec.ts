@@ -9,12 +9,12 @@ import { Book } from '../../src/database/book';
 import { Store } from '../../src/database/store';
 
 describe('Book (e2e)', () => {
-  let ADMIN_TOKEN: string;
+  let TOKEN: string;
 
   beforeEach(async () => {
     await clearDatabase();
-    const user = await createUser({ role: UserRole.ADMIN });
-    ADMIN_TOKEN = await createToken({ id: user.id, email: user.email });
+    const user = await createUser({});
+    TOKEN = await createToken({ id: user.id, email: user.email });
   });
 
   describe('Create Book:', () => {
@@ -29,11 +29,13 @@ describe('Book (e2e)', () => {
     });
 
     it('should create book by admin', async () => {
+      const user = await createUser({ role: UserRole.ADMIN });
+      const adminToken = await createToken({ id: user.id, email: user.email });
       const bookData = { name: 'Book Name' };
       return request(APP.getHttpServer())
         .post('/book')
         .send({ name: 'Book Name' })
-        .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .expect(201)
         .expect((response) => {
           const book = response.body.data;
@@ -64,10 +66,10 @@ describe('Book (e2e)', () => {
       ]);
     });
 
-    it('should return all books with available in stores', async () => {
+    it('should return all books with available in stores by user', async () => {
       return request(APP.getHttpServer())
         .get('/book')
-        .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+        .set('Authorization', `Bearer ${TOKEN}`)
         .expect(200)
         .expect((response) => {
           const paginatedResponse = response.body.data;
@@ -77,11 +79,11 @@ describe('Book (e2e)', () => {
         });
     });
 
-    it('should filter books by name filter', async () => {
+    it('should filter books by name filter by user', async () => {
       const searchedBook = BOOKS[0];
       return request(APP.getHttpServer())
         .get(`/book?keyword=${searchedBook.name}`)
-        .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+        .set('Authorization', `Bearer ${TOKEN}`)
         .expect(200)
         .expect((response) => {
           const paginatedResponse = response.body.data;
