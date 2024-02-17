@@ -4,6 +4,9 @@ import { createToken, createUser } from '../helpers/user.helper';
 import { UserRole } from '../../src/database/user';
 import { createBook } from '../helpers/book.helper';
 import { createStore } from '../helpers/store.helper';
+import { createInventory } from '../helpers/inventory.helper';
+import { Book } from '../../src/database/book';
+import { Store } from '../../src/database/store';
 
 describe('Book (e2e)', () => {
   let ADMIN_TOKEN: string;
@@ -74,6 +77,55 @@ describe('Book (e2e)', () => {
           expect(store.inventory).toBeDefined();
           expect(store.inventory.length).toEqual(1);
           expect(store.inventory[0].quantity).toEqual(10);
+        });
+    });
+  });
+
+  describe('List Books:', () => {
+    let BOOKS: Book[];
+    let STORES: Store[];
+
+    beforeEach(async () => {
+      BOOKS = await Promise.all([
+        createBook({}),
+        createBook({}),
+        createBook({}),
+      ]);
+
+      STORES = await Promise.all([createStore({}), createStore({})]);
+      await Promise.all([
+        createInventory({ book: BOOKS[0], store: STORES[0], quantity: 10 }),
+        createInventory({ book: BOOKS[1], store: STORES[0], quantity: 5 }),
+        createInventory({ book: BOOKS[2], store: STORES[1], quantity: 15 }),
+        createInventory({ book: BOOKS[1], store: STORES[1], quantity: 0 }),
+      ]);
+    });
+
+    it('should return all books with available in stores', async () => {
+      return request(APP.getHttpServer())
+        .get('/book')
+        .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+        .expect(200)
+        .expect((response) => {
+          const paginatedResponse = response.body.data;
+
+          expect(paginatedResponse).toBeDefined();
+          expect(paginatedResponse.results.length).toEqual(3);
+        });
+    });
+
+    it('should filter books by name filter', async () => {
+      const searchedBook = BOOKS[0];
+      return request(APP.getHttpServer())
+        .get(`/book?keyword=${searchedBook.name}`)
+        .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+        .expect(200)
+        .expect((response) => {
+          const paginatedResponse = response.body.data;
+
+          expect(paginatedResponse).toBeDefined();
+          expect(paginatedResponse.results.length).toEqual(1);
+          expect(paginatedResponse.results[0].id).toEqual(searchedBook.id);
         });
     });
   });

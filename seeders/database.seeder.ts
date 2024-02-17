@@ -32,6 +32,9 @@ export class DatabaseSeeder extends Seeder {
     const bookStore = em.create(Store, {
       name: 'Book Store 1',
     });
+    const bookStore2 = em.create(Store, {
+      name: 'Book Store 2',
+    });
 
     const books = [
       { name: 'Book 1' },
@@ -40,8 +43,9 @@ export class DatabaseSeeder extends Seeder {
     ].map((book) => em.create(Book, book));
 
     [
-      { book: books[0], bookStore, quantity: 10 },
-      { book: books[1], bookStore, quantity: 15 },
+      { book: books[0], store: bookStore, quantity: 10 },
+      { book: books[1], store: bookStore, quantity: 15 },
+      { book: books[1], store: bookStore2, quantity: 15 },
     ].map((inventory) => em.create(Inventory, inventory));
   }
 }

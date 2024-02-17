@@ -4,22 +4,23 @@ import {
   EntityRepositoryType,
   ManyToOne,
   Property,
+  Unique,
 } from '@mikro-orm/core';
 
-import { BaseEntity } from '../base/base-entity';
 import { Book } from '../book';
 import { Store } from '../store';
 import { InventoryRepository } from './inventory.repository';
 
 @Entity()
-export class Inventory extends BaseEntity {
+@Unique({ properties: ['book', 'store'] })
+export class Inventory {
   [EntityRepositoryType]?: InventoryRepository;
 
-  @ManyToOne(() => Book)
+  @ManyToOne(() => Book, { primary: true })
   book: Book;
 
-  @ManyToOne(() => Store)
-  bookStore: Store;
+  @ManyToOne(() => Store, { primary: true })
+  store: Store;
 
   @Property()
   quantity: number;

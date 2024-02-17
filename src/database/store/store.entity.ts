@@ -18,7 +18,7 @@ export class Store extends BaseEntity {
   @Property({ unique: true })
   name: string;
 
-  @OneToMany(() => Inventory, (inventory) => inventory.bookStore)
+  @OneToMany(() => Inventory, (inventory) => inventory.store)
   inventory = new Collection<Inventory>(this);
 }
 
