@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { FilterQuery, QueryOrder } from '@mikro-orm/core';
 
 import { Store, StoreRepository } from '../../../database/store';
@@ -6,7 +10,7 @@ import { PaginatedResult, PaginationOptions } from '../../decorators';
 import { StoreCreateDto } from './dto/store-create.dto';
 import { AdjustInventoryDto } from './dto/adjust-inventory.dto';
 import { InventoryRepository } from '../../../database/inventory';
-import { UserDTO } from '../../../database/user';
+import { User, UserDTO, UserRole } from '../../../database/user';
 
 @Injectable()
 export class StoreService {
@@ -28,6 +32,7 @@ export class StoreService {
       limit: pagination?.limit,
       offset: pagination?.offset,
       orderBy: { createdAt: QueryOrder.DESC },
+      populate: ['managers'],
     });
 
     return {
@@ -37,10 +42,23 @@ export class StoreService {
   }
 
   public async create(storeCreateDto: StoreCreateDto) {
-    const createdStore = this.storeRepository.create(storeCreateDto);
-    await this.storeRepository.getEntityManager().flush();
+    return this.storeRepository.getEntityManager().transactional(async (em) => {
+      const createdStore = em.create(Store, storeCreateDto);
 
-    return createdStore;
+      if (storeCreateDto.managerId) {
+        const manager = await em.findOne(User, {
+          id: storeCreateDto.managerId,
+          role: UserRole.STORE_MANAGER,
+        });
+        if (!manager)
+          throw new NotFoundException('Manager not exists or has invalid role');
+
+        createdStore.managers.add(manager);
+      }
+
+      await em.flush();
+      return createdStore;
+    });
   }
 
   public async adjustInventoryQuantity({
