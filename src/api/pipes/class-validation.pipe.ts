@@ -16,7 +16,9 @@ export class ValidationException extends HttpException {
 @Injectable()
 export class ClassValidationPipe extends ValidationPipe {
   constructor() {
-    super({});
+    super({
+      transform: true,
+    });
   }
 
   public createExceptionFactory() {

@@ -4,6 +4,7 @@ import { Book, BookRepository } from '../../../database/book';
 import { QueryOrder } from '@mikro-orm/core';
 import { PaginationOptions } from '../../decorators';
 import { Inventory } from '../../../database/inventory';
+import { BookFilterQuery } from './dto/book-filter-query';
 
 @Injectable()
 export class BookService {
@@ -32,13 +33,15 @@ export class BookService {
   }
 
   async findBookAvailability(
-    keyword?: string,
+    filter?: BookFilterQuery,
     pagination?: PaginationOptions<Book>,
   ) {
     const [results, total] = await this.bookRepository.findAndCount(
       {
-        inventory: { quantity: { $gt: 0 } },
-        ...(keyword && { name: { $like: `%${keyword}%` } }),
+        ...(filter?.available && {
+          inventory: { quantity: { $gt: 0 } },
+        }),
+        ...(filter?.keyword && { name: { $like: `%${filter.keyword}%` } }),
       },
       {
         limit: pagination?.limit,
