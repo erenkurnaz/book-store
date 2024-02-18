@@ -8,16 +8,23 @@
 ```bash
 cp .env.local .env
 ```
-#### 3. Run docker compose
+#### 3. Run docker compose for database
 ```bash
 docker-compose up -d
 ```
-*API runs on <a href="http://localhost:3000" target="blank">localhost:3000</a>, postgres runs on **::5432** by default*
 
-#### 4. Seed the database
+#### 4. Initialize and run the tests
+*Tests will run with the `.env.test` environment file.*
 ```bash
-npm run migration:seed
+npm install && npm run migration:seed && npm run test
 ```
+
+#### 5. Run the application
+```bash
+npm run start
+```
+App will be running on <a href="http://localhost:3000" target="_blank">http://localhost:3000</a> by default.
+
 ### Default Users
 | User | Email            | Password(*decoded*)  | Full Name   | 
 |------|------------------|----------------------|-------------|
@@ -31,7 +38,7 @@ npm run migration:seed
 ![book-store-db-diagram.png](book-store-db-diagram.png)
 ---
 ### API Documentation
-**Postman: [Book Store API.postman_collection.json](Book%20Store%20API.postman_collection.json)**
+**[Postman collection and environment document](https://documenter.getpostman.com/view/22854292/2sA2r823zG)**
 
 ### Response Types
 

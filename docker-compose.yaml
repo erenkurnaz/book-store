@@ -13,18 +13,5 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
-
-  app:
-    build: .
-    ports:
-      - "${PORT:-3000}:${PORT:-3000}"
-    environment:
-      - PORT=${PORT}
-    links:
-      - postgres
-    depends_on:
-      - postgres
-    env_file:
-      - .env.local
 volumes:
   postgres_data:
