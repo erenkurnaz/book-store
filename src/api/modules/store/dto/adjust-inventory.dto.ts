@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, IsUUID } from 'class-validator';
 
 export class AdjustInventoryDto {
   @IsNumber()
@@ -6,8 +6,12 @@ export class AdjustInventoryDto {
   quantityChange: number;
 
   @IsNotEmpty()
+  @IsUUID()
+  @IsString()
   bookId: string;
 
   @IsNotEmpty()
+  @IsUUID()
+  @IsString()
   storeId: string;
 }

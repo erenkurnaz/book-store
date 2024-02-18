@@ -211,7 +211,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/book?onlyAvailable=true",
+							"raw": "{{host}}/book?available=true",
 							"host": [
 								"{{host}}"
 							],
@@ -220,7 +220,7 @@
 							],
 							"query": [
 								{
-									"key": "onlyAvailable",
+									"key": "available",
 									"value": "true"
 								}
 							]
