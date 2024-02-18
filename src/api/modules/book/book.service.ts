@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BookCreateDto } from './dto/book-create.dto';
 import { Book, BookRepository } from '../../../database/book';
-import { QueryOrder } from '@mikro-orm/core';
 import { PaginationOptions } from '../../decorators';
 import { Inventory } from '../../../database/inventory';
 import { BookFilterQuery } from './dto/book-filter-query';
@@ -46,7 +45,7 @@ export class BookService {
       {
         limit: pagination?.limit,
         offset: pagination?.offset,
-        orderBy: { createdAt: QueryOrder.DESC },
+        orderBy: { [pagination?.orderBy]: pagination?.order },
         populate: ['inventory'],
         fields: ['name'],
       },

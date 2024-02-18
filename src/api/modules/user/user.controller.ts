@@ -15,6 +15,7 @@ import { User, UserRole } from '../../../database/user';
 import { UserService } from './user.service';
 import { UserCreateDto } from './dto/user-create.dto';
 import { UserUpdateDto } from './dto/user-update.dto';
+import { QueryOrder } from '@mikro-orm/core';
 
 @Controller('user')
 @UseGuards(RolesGuard)
@@ -37,7 +38,13 @@ export class UserController {
 
   @Get()
   public async getAll(
-    @Pagination() pagination: PaginationOptions<User>,
+    @Pagination<User>({
+      limit: 10,
+      offset: 0,
+      orderBy: 'createdAt',
+      order: QueryOrder.DESC,
+    })
+    pagination: PaginationOptions<User>,
     @Query('keyword') keyword?: string,
   ) {
     return await this.userService.getAll(keyword, pagination);

@@ -7,6 +7,7 @@ import { BookCreateDto } from './dto/book-create.dto';
 import { Pagination, PaginationOptions, Public } from '../../decorators';
 import { Book } from '../../../database/book';
 import { BookFilterQuery } from './dto/book-filter-query';
+import { QueryOrder } from '@mikro-orm/core';
 
 @Controller('book')
 @UseGuards(RolesGuard)
@@ -16,7 +17,13 @@ export class BookController {
   @Get()
   @Public()
   public async getAll(
-    @Pagination() pagination: PaginationOptions<Book>,
+    @Pagination<Book>({
+      limit: 10,
+      offset: 0,
+      orderBy: 'createdAt',
+      order: QueryOrder.DESC,
+    })
+    pagination: PaginationOptions<Book>,
     @Query() filterQuery?: BookFilterQuery,
   ) {
     return await this.bookService.findBookAvailability(filterQuery, pagination);

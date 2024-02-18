@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { FilterQuery, QueryOrder, wrap } from '@mikro-orm/core';
+import { FilterQuery, wrap } from '@mikro-orm/core';
 
 import { PaginatedResult, PaginationOptions } from '../../decorators';
 import { User, UserRepository } from '../../../database/user';
@@ -31,7 +31,7 @@ export class UserService {
     const [results, total] = await this.userRepository.findAndCount(where, {
       limit: pagination?.limit,
       offset: pagination?.offset,
-      orderBy: { createdAt: QueryOrder.DESC },
+      orderBy: { [pagination?.orderBy]: pagination?.order },
     });
 
     return {

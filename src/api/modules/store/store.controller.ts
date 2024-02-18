@@ -15,6 +15,7 @@ import { Roles } from '../../decorators/roles.decorator';
 import { UserDTO, UserRole } from '../../../database/user';
 import { StoreCreateDto } from './dto/store-create.dto';
 import { AdjustInventoryDto } from './dto/adjust-inventory.dto';
+import { QueryOrder } from '@mikro-orm/core';
 
 @Controller('store')
 @UseGuards(RolesGuard)
@@ -29,7 +30,13 @@ export class StoreController {
 
   @Get()
   public async getAll(
-    @Pagination() pagination: PaginationOptions<Store>,
+    @Pagination<Store>({
+      limit: 10,
+      offset: 0,
+      orderBy: 'createdAt',
+      order: QueryOrder.DESC,
+    })
+    pagination: PaginationOptions<Store>,
     @Query('keyword') keyword?: string,
   ) {
     return await this.storeService.getAll(keyword, pagination);

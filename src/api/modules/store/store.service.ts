@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { FilterQuery, QueryOrder } from '@mikro-orm/core';
+import { FilterQuery } from '@mikro-orm/core';
 
 import { Store, StoreRepository } from '../../../database/store';
 import { PaginatedResult, PaginationOptions } from '../../decorators';
@@ -31,7 +31,7 @@ export class StoreService {
     const [results, total] = await this.storeRepository.findAndCount(where, {
       limit: pagination?.limit,
       offset: pagination?.offset,
-      orderBy: { createdAt: QueryOrder.DESC },
+      orderBy: { [pagination?.orderBy]: pagination?.order },
       populate: ['managers'],
     });
 
