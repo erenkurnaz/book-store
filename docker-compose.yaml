@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:latest
-    container_name: book_store_db
+    container_name: postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-book-store}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -13,5 +13,18 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+
+  app:
+    build: .
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+    environment:
+      - PORT=${PORT}
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    env_file:
+      - .env.local
 volumes:
   postgres_data:

@@ -9,19 +9,12 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "start:dev": "nest start --watch",
+    "start:dev": "NODE_ENV=development nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "migration:fresh": "mikro-orm migration:fresh --seed",
-    "migration:create": "mikro-orm migration:create",
-    "migration:up": "mikro-orm migration:up",
-    "migration:down": "mikro-orm migration:down",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand --forceExit",
-    "test:e2e": "NODE_ENV=test node --expose-gc ./node_modules/.bin/jest --config test/jest-e2e.json --logHeapUsage --runInBand --verbose --passWithNoTests --forceExit --detectOpenHandles"
+    "migration:seed": "mikro-orm migration:fresh --seed",
+    "test": "NODE_ENV=test node --expose-gc ./node_modules/.bin/jest --config test/jest-e2e.json --logHeapUsage --runInBand --verbose --passWithNoTests --forceExit --detectOpenHandles",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
