@@ -3,16 +3,32 @@ import { BookCreateDto } from './dto/book-create.dto';
 import { Book, BookRepository } from '../../../database/book';
 import { QueryOrder } from '@mikro-orm/core';
 import { PaginationOptions } from '../../decorators';
+import { Inventory } from '../../../database/inventory';
 
 @Injectable()
 export class BookService {
   constructor(private readonly bookRepository: BookRepository) {}
 
-  public async create(storeCreateDto: BookCreateDto) {
-    const createdBook = this.bookRepository.create(storeCreateDto);
-    await this.bookRepository.getEntityManager().flush();
+  public async create(bookCreateDto: BookCreateDto) {
+    return this.bookRepository.getEntityManager().transactional(async (em) => {
+      const book = new Book();
+      book.name = bookCreateDto.name;
+      const createdBook = em.create(Book, {
+        name: bookCreateDto.name,
+      });
+      await em.flush();
 
-    return createdBook;
+      if (bookCreateDto.inventory) {
+        await em
+          .getRepository(Inventory)
+          .upsertQuantity(
+            createdBook.id,
+            bookCreateDto.inventory.storeId,
+            bookCreateDto.inventory.quantity,
+          );
+      }
+      return createdBook;
+    });
   }
 
   async findBookAvailability(

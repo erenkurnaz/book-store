@@ -20,6 +20,7 @@ export class BookController {
   ) {
     return await this.bookService.findBookAvailability(keyword, pagination);
   }
+
   @Post()
   @Roles([UserRole.ADMIN])
   public async create(@Body() bookCreateDto: BookCreateDto) {
