@@ -46,8 +46,7 @@ export class BookService {
         limit: pagination?.limit,
         offset: pagination?.offset,
         orderBy: { [pagination?.orderBy]: pagination?.order },
-        populate: ['inventory'],
-        fields: ['name'],
+        populate: ['inventory', 'inventory.quantity'],
       },
     );
 

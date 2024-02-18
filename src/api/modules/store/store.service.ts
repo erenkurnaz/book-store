@@ -85,4 +85,16 @@ export class StoreService {
       );
     }
   }
+
+  public async getById(id: string) {
+    const store = await this.storeRepository.findOne(
+      { id },
+      {
+        populate: ['managers', 'inventory'],
+      },
+    );
+    console.log(store);
+    if (!store) throw new NotFoundException('Store not found');
+    return store;
+  }
 }

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Put,
   Query,
@@ -25,7 +26,7 @@ export class StoreController {
   @Post()
   @Roles([UserRole.ADMIN])
   public async create(@Body() storeCreateDto: StoreCreateDto) {
-    return await this.storeService.create(storeCreateDto);
+    return this.storeService.create(storeCreateDto);
   }
 
   @Get()
@@ -39,7 +40,12 @@ export class StoreController {
     pagination: PaginationOptions<Store>,
     @Query('keyword') keyword?: string,
   ) {
-    return await this.storeService.getAll(keyword, pagination);
+    return this.storeService.getAll(keyword, pagination);
+  }
+
+  @Get(':id')
+  public async getOne(@Param('id') id: string) {
+    return this.storeService.getById(id);
   }
 
   @Put('adjust-inventory')
