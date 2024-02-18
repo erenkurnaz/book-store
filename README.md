@@ -1,73 +1,55 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+## Book Store
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Installation and Running the app
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
-
+#### 1. Clone the repository
+#### 2. Copy the .env.local file to .env
 ```bash
-$ npm install
+cp .env.local .env
 ```
-
-## Running the app
-
+#### 3. Run docker compose
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+docker-compose up -d
 ```
+*API runs on <a href="http://localhost:3000" target="blank">localhost:3000</a>, postgres runs on **::5432** by default*
 
-## Test
-
+#### 4. Seed the database
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run migration:seed
 ```
+### Default Users
+| User | Email            | Password(*decoded*)  | Full Name   | 
+|------|------------------|----------------------|-------------|
+| #1   | user@mail.com    | password             | User Doe    |
+| #2   | manager@mail.com | password             | Manager Doe |
+| #3   | admin@mail.com   | password             | Admin Doe   |
 
-## Support
+---
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Database Diagram
+![book-store-db-diagram.png](book-store-db-diagram.png)
+---
+### API Documentation
+**Postman: [Book Store API.postman_collection.json](Book%20Store%20API.postman_collection.json)**
 
-## Stay in touch
+#### Authentication
+`[GET] /auth/me`: Returns the current user's information. [Requires Authentication]
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+`[POST] /auth/sign-up`: Register a new user [Public]
 
-## License
+`[POST] /auth/sign-in`: Login a user [Public]
+#### User
+`[GET] /user`: Returns a list of users. [Required Roles: `admin`]
 
-Nest is [MIT licensed](LICENSE).
+`[POST] /user`: Create a new user. [Required Roles: `admin`]
+#### Book
+`[GET] /book`: Returns a paginated list of books. [Requires Authentication]
+
+`[POST] /book`: Create a new book. [Required Roles: `admin`]
+#### Store
+`[GET] /store`: Returns a list of stores. [Required Authentication]
+
+`[POST] /store`: Create a new store. [Required Roles: `admin`]
+
+`[PUT] /store/adjust-inventory`: Adjust the inventory of a store. [Required Roles: `manager` or `admin`]
